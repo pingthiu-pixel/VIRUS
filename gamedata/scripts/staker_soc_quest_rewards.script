@@ -1,0 +1,69 @@
+-- Файл: gamedata/scripts/staker_soc_quest_rewards.script
+-- Скрипт обработки наград за квесты для Stalker SoC
+
+-- Функция награды за задание от Волка ("Забрать информацию у разведчика")
+function wolf_scout_reward()
+    local actor = db.actor
+    if not actor then return end
+
+    -- Установка репутации (100 - отлично)
+    -- В оригинале шкала от -1000 до 1000, 1000 - максимум дружбы
+    actor:set_reputation(1000) 
+
+    -- Установка ранга (1000 - мастер/легенда)
+    -- В оригинале ранг от 0 до 1000+
+    actor:set_rank(1000)
+
+    -- Вывод сообщения в лог (для отладки и подтверждения)
+    print("Wolf Scout Quest Completed: Reputation set to MAX (1000), Rank set to MASTER (1000)")
+end
+
+-- Функция награды за ветку со ШУСТРЫМ (Флешка)
+-- is_shustry_alive: true если Шустрый жив и отдал сам, false если он мертв и флешка взята с трупа
+function shustry_flash_reward(is_shustry_alive)
+    local actor = db.actor
+    if not actor then return end
+
+    -- Базовые свойства (как вы просили ранее)
+    actor:set_reputation(1000)
+    actor:set_rank(1000)
+
+    if is_shustry_alive then
+        -- Ветка: Шустрый ЖИВ и отдал флешку сам -> Группировка ДОЛГ
+        local dolg_id = get_guilde_id("dolg")
+        if dolg_id then
+            actor:set_game_relation(dolg_id, 1000) -- Максимальные отношения
+            actor:set_starting_game_type(dolg_id)  -- Смена игровой группировки
+            change_team(dolg_id)                   -- Смена команды (для мультиплеера/скриптовых событий)
+            
+            -- Принудительная смена группировки в профиле
+            actor:movement().set_mental_state(e_mental_state::panic) -- Сброс состояния чтобы не глючило
+            actor:set_character_community("dolg", 0, 0)
+            
+            print("Shusty Alive Branch: Joined DOLG. Reputation: 1000, Rank: 1000")
+        end
+    else
+        -- Ветка: Шустрый МЕРТВ, флешка взята с трупа -> Группировка СВОБОДА
+        local freedom_id = get_guilde_id("freedom")
+        if freedom_id then
+            actor:set_game_relation(freedom_id, 1000)
+            actor:set_starting_game_type(freedom_id)
+            change_team(freedom_id)
+            
+            actor:movement().set_mental_state(e_mental_state::panic)
+            actor:set_character_community("freedom", 0, 0)
+            
+            print("Shusty Dead Branch: Joined FREEDOM. Reputation: 1000, Rank: 1000")
+        end
+    end
+end
+
+-- Обертка для вызова из ltx когда Шустрый жив
+function shustry_alive_complete()
+    shustry_flash_reward(true)
+end
+
+-- Обертка для вызова из ltx когда Шустрый мертв
+function shustry_dead_complete()
+    shustry_flash_reward(false)
+end

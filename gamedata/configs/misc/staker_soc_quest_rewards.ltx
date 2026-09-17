@@ -1,0 +1,47 @@
+; Файл: gamedata/configs/misc/staker_soc_quest_rewards.ltx
+; Конфигурация привязки скриптов к квестам для Stalker SoC
+
+; ==========================================
+; ЗАДАНИЕ ОТ ВОЛКА: "Забрать информацию у разведчика"
+; ==========================================
+; Привязка функции награды к завершению квеста.
+; Замените 'wolf_scout_quest' на актуальный ID квеста из вашего мода или оригинала,
+; если он отличается. Обычно это название секции в task_desc_*.ltx.
+
+[wolf_scout_quest_on_complete]
+on_info = %=staker_soc_quest_rewards.wolf_scout_reward()%
+
+; ==========================================
+; ВЕТКА С ШУСТРЫМ (ЖИВ)
+; ==========================================
+; Если Шустрый жив и сам отдает флешку (квест выполнен через диалог/событие с живым NPC).
+; Замените 'shustry_alive_flash_quest' на реальный ID квеста.
+
+[shustry_alive_flash_quest_on_complete]
+on_info = %=staker_soc_quest_rewards.shustry_alive_complete()%
+
+; ==========================================
+; ВЕТКА С ШУСТРЫМ (МЕРТВ)
+; ==========================================
+; Если Шустрый мертв, флешка взята с трупа и сдана квестмейкеру.
+; Замените 'shustry_dead_flash_quest' на реальный ID квеста.
+
+[shustry_dead_flash_quest_on_complete]
+on_info = %=staker_soc_quest_rewards.shustry_dead_complete()%
+
+; ==========================================
+; ИНСТРУКЦИЯ ПО УСТАНОВКЕ
+; ==========================================
+; 1. Поместите файл staker_soc_quest_rewards.script в папку: gamedata/scripts/
+; 2. Поместите этот файл (staker_soc_quest_rewards.ltx) в папку: gamedata/configs/misc/
+; 3. Откройте файл task_desc_*.ltx (где описаны ваши квесты) и убедитесь, что секции квестов
+;    имеют имена, соответствующие ключам выше (или измените ключи в этом файле под ваши).
+;    Пример для task_desc_stalker.ltx:
+;    
+;    [wolf_scout_quest]
+;    ...
+;    on_complete = wolf_scout_quest_on_complete
+;
+;    Если в оригинале используется другая система (например, direct call в диалогах),
+;    то вызывайте функции напрямую из диалогов:
+;    info_portion_name = {=staker_soc_quest_rewards.wolf_scout_reward()} Название инфопоршена
