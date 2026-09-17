@@ -1,0 +1,1 @@
+Nothing should be ignored in this case, as the changes only include source/config files (.script file) and a README.txt file, with no build artifacts, dependencies, or temporary files present.
