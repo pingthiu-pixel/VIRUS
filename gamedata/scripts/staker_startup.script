@@ -1,0 +1,37 @@
+-- staker_startup.script
+-- Скрипт устанавливает группировку Долг, ранг 1000 и репутацию 1000 при старте игры
+-- Этот скрипт вызывается из bind_stalker.script в функции actor_init()
+
+local function set_actor_faction()
+    local actor = db.actor
+    if not actor then 
+        print("[STAKER MOD] Actor not found yet, skipping faction setup")
+        return 
+    end
+    
+    -- Проверяем текущую группировку
+    local current_faction = actor:character_community()
+    print("[STAKER MOD] Current faction: " .. current_faction)
+    
+    -- Меняем только если игрок одиночка (stalker)
+    if current_faction == "stalker" then
+        -- Устанавливаем группировку Долг (army)
+        actor:set_character_community("army", 0, 0)
+        
+        -- Устанавливаем максимальную репутацию со всеми группировками
+        local factions = {"army", "killer", "stalker", "eco", "sin", "monolith", "zombied"}
+        for _, faction_id in ipairs(factions) do
+            actor:set_relation(faction_id, 1000)
+        end
+        
+        -- Устанавливаем ранг 1000 (Мастер)
+        actor:set_rank(1000)
+        
+        print("[STAKER MOD] SUCCESS: Actor set to DOLG faction, rank 1000, reputation 1000")
+    else
+        print("[STAKER MOD] Actor already in faction: " .. current_faction .. ", skipping")
+    end
+end
+
+-- Вызываем функцию
+set_actor_faction()
